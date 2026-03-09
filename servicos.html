@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACELL ASSESSORIA - Serviços</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header id="header">
+  <div class="header-container">
+    <div class="logo">
+      <span class="logo-icon"><i class="fas fa-chart-line"></i></span>
+      <span class="logo-text">ACELL <span class="logo-highlight">ASSESSORIA</span></span>
+    </div>
+    <nav id="nav-menu">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="servicos.html" class="nav-link active">Serviços</a>
+      <a href="index.html#sobre" class="nav-link">Sobre</a>
+      <a href="index.html#contato" class="nav-link">Contato</a>
+    </nav>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+</header>
+
+<section class="page-banner">
+  <div class="page-banner-overlay"></div>
+  <div class="page-banner-content">
+    <h1>Nossos Serviços</h1>
+    <p>Soluções contábeis completas para o sucesso da sua empresa</p>
+  </div>
+</section>
+
+<!-- ================= BARRA DE PESQUISA ================= -->
+<section class="search-section">
+  <div class="container">
+    <div class="search-box">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="search-servicos" placeholder="Pesquisar serviços... (ex: folha de pagamento, IRPJ, abertura)" autocomplete="off">
+        <button id="clear-search" class="clear-search-btn" aria-label="Limpar pesquisa">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <span id="result-count" class="result-count"></span>
+    </div>
+    <div class="category-filters">
+      <button class="category-btn active" data-category="todos"><i class="fas fa-th"></i> Todos</button>
+      <button class="category-btn" data-category="contabilidade"><i class="fas fa-book"></i> Contabilidade</button>
+      <button class="category-btn" data-category="fiscal"><i class="fas fa-calculator"></i> Fiscal / Tributário</button>
+      <button class="category-btn" data-category="pessoal"><i class="fas fa-users"></i> Dept. Pessoal</button>
+      <button class="category-btn" data-category="legalizacao"><i class="fas fa-building"></i> Legalização</button>
+      <button class="category-btn" data-category="consultoria"><i class="fas fa-lightbulb"></i> Consultoria</button>
+      <button class="category-btn" data-category="bpo"><i class="fas fa-wallet"></i> BPO Financeiro</button>
+      <button class="category-btn" data-category="inteligencia"><i class="fas fa-chart-bar"></i> Inteligência</button>
+      <button class="category-btn" data-category="pf"><i class="fas fa-user"></i> Pessoa Física</button>
+      <button class="category-btn" data-category="avancados"><i class="fas fa-cogs"></i> Avançados</button>
+      <button class="category-btn" data-category="modernos"><i class="fas fa-rocket"></i> Modernos</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LISTA DE SERVIÇOS ================= -->
+<section class="servicos-lista-completa">
+  <div class="container">
+
+    <div id="no-results" class="no-results" style="display:none;">
+      <i class="fas fa-search"></i>
+      <h3>Nenhum serviço encontrado</h3>
+      <p>Tente buscar com outras palavras ou selecione uma categoria.</p>
+    </div>
+
+    <!-- 1 - Contabilidade -->
+    <div class="service-category" data-category="contabilidade">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-book"></i></div>
+        <h2>Serviços de Contabilidade</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Escrituração contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Classificação contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Conciliação contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Balancete mensal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Balanço patrimonial</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Demonstração do Resultado (DRE)</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Demonstração de Fluxo de Caixa</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Demonstração de Lucros ou Prejuízos</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Demonstração do Valor Adicionado</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Livro diário</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Livro razão</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de resultado</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Consolidação de balanços</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Ajustes contábeis</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Provisões contábeis</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Controle patrimonial</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Depreciação de ativos</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Amortização</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Relatórios contábeis gerenciais</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Análise de balanços</span></a>
+      </div>
+    </div>
+
+    <!-- 2 - Fiscal / Tributário -->
+    <div class="service-category" data-category="fiscal">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-calculator"></i></div>
+        <h2>Serviços Fiscais / Tributários</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de ICMS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de ISS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de PIS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de COFINS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de IRPJ</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de CSLL</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de IPI</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Apuração de retenções federais</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Emissão de guias de impostos</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Controle de créditos tributários</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Planejamento tributário</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Revisão fiscal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Recuperação de impostos</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Parcelamentos fiscais</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Regularização fiscal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Análise de enquadramento tributário</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Simulação de carga tributária</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Defesas administrativas fiscais</span></a>
+        <div class="service-card service-card-subtitle"><strong>Declarações entregues para a Receita Federal do Brasil:</strong></div>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>SPED Fiscal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>SPED Contribuições</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>DCTF</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>EFD-Reinf</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>PER/DCOMP</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>DEFIS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>PGDAS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>GIA</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>DeSTDA</span></a>
+      </div>
+    </div>
+
+    <!-- 3 - Departamento Pessoal -->
+    <div class="service-category" data-category="pessoal">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-users"></i></div>
+        <h2>Departamento Pessoal</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Registro de empregados</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Admissão de funcionários</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Demissão / rescisão</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Folha de pagamento</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Cálculo de férias</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Cálculo de 13º salário</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Cálculo de pró-labore</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Cálculo de encargos trabalhistas</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Controle de benefícios</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>GFIP</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>RAIS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>CAGED</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Controle de ponto</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Afastamentos</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Cálculo de INSS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Cálculo de FGTS</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Envios pelo sistema eSocial</span></a>
+      </div>
+    </div>
+
+    <!-- 4 - Legalização de Empresas -->
+    <div class="service-category" data-category="legalizacao">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-building"></i></div>
+        <h2>Legalização de Empresas</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Abertura de empresa</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Constituição de sociedade</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Registro de contrato social</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Alteração contratual</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Inclusão de sócios</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Saída de sócios</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Transformação de empresa</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Baixa de empresa</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Regularização de CNPJ</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Inscrição estadual</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Inscrição municipal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Alvará de funcionamento</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Licenças e registros</span></a>
+        <div class="service-card service-card-subtitle"><strong>Registros em:</strong></div>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Junta Comercial</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Receita Federal do Brasil</span></a>
+      </div>
+    </div>
+
+    <!-- 5 - Consultoria Empresarial -->
+    <div class="service-category" data-category="consultoria">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-lightbulb"></i></div>
+        <h2>Consultoria Empresarial</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Planejamento tributário</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Planejamento financeiro</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Planejamento societário</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Reorganização societária</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Redução de carga tributária</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Compliance fiscal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Consultoria contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Consultoria fiscal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Consultoria trabalhista</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Diagnóstico empresarial</span></a>
+      </div>
+    </div>
+
+    <!-- 6 - BPO Financeiro -->
+    <div class="service-category" data-category="bpo">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-wallet"></i></div>
+        <h2>BPO Financeiro</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Contas a pagar</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Contas a receber</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Emissão de boletos</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Emissão de notas fiscais</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Conciliação bancária</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Controle de fluxo de caixa</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Controle de inadimplência</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Relatórios financeiros</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Controle de despesas</span></a>
+      </div>
+    </div>
+
+    <!-- 7 - Inteligência e Gestão -->
+    <div class="service-category" data-category="inteligencia">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-chart-bar"></i></div>
+        <h2>Inteligência e Gestão</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Indicadores financeiros</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Análise de custos</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Formação de preços</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Planejamento orçamentário</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Dashboard financeiro</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Ferramentas como Power BI</span></a>
+      </div>
+    </div>
+
+    <!-- 8 - Pessoa Física -->
+    <div class="service-category" data-category="pf">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-user"></i></div>
+        <h2>Serviços para Pessoa Física</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Declaração de imposto de renda</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Regularização de CPF</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Cálculo de ganho de capital</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Carnê-leão</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Livro caixa</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Planejamento patrimonial</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Regularização fiscal</span></a>
+      </div>
+    </div>
+
+    <!-- 9 - Serviços Avançados -->
+    <div class="service-category" data-category="avancados">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-cogs"></i></div>
+        <h2>Serviços Avançados</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Auditoria contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Auditoria fiscal</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Perícia contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Avaliação de empresas</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Due diligence</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Revisão contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Recuperação de créditos tributários</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Compliance empresarial</span></a>
+      </div>
+    </div>
+
+    <!-- 10 - Serviços Modernos -->
+    <div class="service-category" data-category="modernos">
+      <div class="category-header">
+        <div class="category-icon"><i class="fas fa-rocket"></i></div>
+        <h2>Serviços Modernos (Nova Contabilidade)</h2>
+      </div>
+      <div class="services-grid">
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Contabilidade consultiva</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Implantação de ERP</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Automação contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>BI contábil</span></a>
+        <a href="index.html#contato" class="service-card"><i class="fas fa-check-circle"></i><span>Dashboard gerencial</span></a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= SERVIÇOS DETALHADOS (existentes) ================= -->
+<section class="servicos-detalhados">
+  <div class="container">
+    <div class="section-header">
+      <h2>Detalhes dos Principais Serviços</h2>
+      <p>Conheça mais sobre nossos serviços mais procurados.</p>
+    </div>
+    <div class="servico-detalhe" id="abertura">
+      <div class="servico-detalhe-icon"><i class="fas fa-building"></i></div>
+      <div class="servico-detalhe-content">
+        <h2>Abertura de Empresa</h2>
+        <p>Regularizamos sua empresa com segurança e rapidez. Cuidamos de todo o processo burocrático para que você possa iniciar suas atividades o mais rápido possível.</p>
+        <ul class="servico-lista">
+          <li><i class="fas fa-check"></i> Registro na Junta Comercial</li>
+          <li><i class="fas fa-check"></i> Obtenção de CNPJ</li>
+          <li><i class="fas fa-check"></i> Inscrição Estadual e Municipal</li>
+          <li><i class="fas fa-check"></i> Alvará de Funcionamento</li>
+          <li><i class="fas fa-check"></i> Orientação sobre o melhor regime tributário</li>
+        </ul>
+      </div>
+    </div>
+    <div class="servico-detalhe" id="tributario">
+      <div class="servico-detalhe-icon"><i class="fas fa-calculator"></i></div>
+      <div class="servico-detalhe-content">
+        <h2>Planejamento Tributário</h2>
+        <p>Desenvolvemos estratégias legais para reduzir a carga tributária da sua empresa, maximizando seus resultados de forma segura e dentro da lei.</p>
+        <ul class="servico-lista">
+          <li><i class="fas fa-check"></i> Análise do regime tributário atual</li>
+          <li><i class="fas fa-check"></i> Simulações comparativas (Simples, Lucro Presumido, Lucro Real)</li>
+          <li><i class="fas fa-check"></i> Identificação de créditos e benefícios fiscais</li>
+          <li><i class="fas fa-check"></i> Planejamento para redução legal de impostos</li>
+          <li><i class="fas fa-check"></i> Acompanhamento contínuo</li>
+        </ul>
+      </div>
+    </div>
+    <div class="servico-detalhe" id="escrituracao">
+      <div class="servico-detalhe-icon"><i class="fas fa-book"></i></div>
+      <div class="servico-detalhe-content">
+        <h2>Escrituração Contábil</h2>
+        <p>Organização completa da contabilidade da sua empresa com precisão, conformidade e dentro dos prazos legais.</p>
+        <ul class="servico-lista">
+          <li><i class="fas fa-check"></i> Lançamentos contábeis</li>
+          <li><i class="fas fa-check"></i> Balancetes e Balanço Patrimonial</li>
+          <li><i class="fas fa-check"></i> Demonstração de Resultados (DRE)</li>
+          <li><i class="fas fa-check"></i> Livros contábeis obrigatórios</li>
+          <li><i class="fas fa-check"></i> Relatórios gerenciais</li>
+        </ul>
+      </div>
+    </div>
+    <div class="servico-detalhe" id="folha">
+      <div class="servico-detalhe-icon"><i class="fas fa-users"></i></div>
+      <div class="servico-detalhe-content">
+        <h2>Folha de Pagamento</h2>
+        <p>Gestão completa de salários, benefícios e obrigações trabalhistas, garantindo conformidade com a legislação e tranquilidade para sua empresa.</p>
+        <ul class="servico-lista">
+          <li><i class="fas fa-check"></i> Cálculo de folha de pagamento</li>
+          <li><i class="fas fa-check"></i> Admissão e rescisão de funcionários</li>
+          <li><i class="fas fa-check"></i> Férias e 13º salário</li>
+          <li><i class="fas fa-check"></i> Obrigações acessórias (eSocial, SEFIP, CAGED)</li>
+          <li><i class="fas fa-check"></i> Gestão de benefícios</li>
+        </ul>
+      </div>
+    </div>
+    <div class="servico-detalhe" id="fiscal">
+      <div class="servico-detalhe-icon"><i class="fas fa-search-dollar"></i></div>
+      <div class="servico-detalhe-content">
+        <h2>Consultoria Fiscal</h2>
+        <p>Orientação especializada para manter sua empresa em conformidade com o fisco e otimizar o pagamento de impostos.</p>
+        <ul class="servico-lista">
+          <li><i class="fas fa-check"></i> Apuração de impostos federais, estaduais e municipais</li>
+          <li><i class="fas fa-check"></i> Emissão e conferência de notas fiscais</li>
+          <li><i class="fas fa-check"></i> Obrigações acessórias (SPED, EFD, DCTF)</li>
+          <li><i class="fas fa-check"></i> Acompanhamento de legislação fiscal</li>
+          <li><i class="fas fa-check"></i> Defesa em processos administrativos</li>
+        </ul>
+      </div>
+    </div>
+    <div class="servico-detalhe" id="mei">
+      <div class="servico-detalhe-icon"><i class="fas fa-id-card"></i></div>
+      <div class="servico-detalhe-content">
+        <h2>Regularização de MEI</h2>
+        <p>Regularizamos e atualizamos seu MEI rapidamente, evitando problemas com órgãos públicos e garantindo que você continue operando legalmente.</p>
+        <ul class="servico-lista">
+          <li><i class="fas fa-check"></i> Abertura de MEI</li>
+          <li><i class="fas fa-check"></i> Declaração Anual (DASN-SIMEI)</li>
+          <li><i class="fas fa-check"></i> Regularização de pendências</li>
+          <li><i class="fas fa-check"></i> Alteração e baixa de MEI</li>
+          <li><i class="fas fa-check"></i> Orientação sobre direitos e obrigações</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <h2>Precisa de ajuda com a contabilidade da sua empresa?</h2>
+    <p>Entre em contato agora e solicite uma proposta personalizada.</p>
+    <a href="index.html#contato" class="btn btn-primary btn-lg">Solicitar Proposta</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="logo footer-logo">
+          <span class="logo-icon"><i class="fas fa-chart-line"></i></span>
+          <span class="logo-text">ACELL <span class="logo-highlight">ASSESSORIA</span></span>
+        </div>
+        <p>Assessoria contábil completa para empresas de todos os portes.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Links Rápidos</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="servicos.html">Serviços</a></li>
+          <li><a href="index.html#sobre">Sobre</a></li>
+          <li><a href="index.html#contato">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Serviços</h4>
+        <ul>
+          <li><a href="#abertura">Abertura de Empresa</a></li>
+          <li><a href="#tributario">Planejamento Tributário</a></li>
+          <li><a href="#escrituracao">Escrituração Contábil</a></li>
+          <li><a href="#folha">Folha de Pagamento</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Redes Sociais</h4>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="https://wa.me/5511983846167" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ACELL Assessoria. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/5511983846167" target="_blank" class="botao-whatsapp" aria-label="Contato pelo WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+  <span>Fale Conosco</span>
+</a>
+
+<button class="btn-topo" id="btn-topo" aria-label="Voltar ao topo">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<script src="script.js"></script>
+</body>
+</html>
