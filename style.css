@@ -294,6 +294,11 @@ header.scrolled { box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2); }
   border-top: 4px solid transparent;
 }
 
+.card-link {
+  display: block;
+  text-decoration: none;
+}
+
 .card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
@@ -322,6 +327,14 @@ header.scrolled { box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2); }
   font-size: 0.95rem;
   color: var(--text-light);
   line-height: 1.7;
+}
+
+.card-link:hover h3 {
+  color: var(--primary);
+}
+
+.card-link:hover p {
+  color: var(--text-light);
 }
 
 .servicos-cta {

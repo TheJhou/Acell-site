@@ -180,6 +180,99 @@ if (telefoneInput) {
   });
 }
 
+// ================= FILTROS DA PÁGINA DE SERVIÇOS =================
+function initServiceFilters() {
+  const categoryButtons = document.querySelectorAll('.category-btn');
+  const serviceCategories = document.querySelectorAll('.service-category');
+  const searchInput = document.getElementById('search-servicos');
+  const clearSearchButton = document.getElementById('clear-search');
+  const resultCount = document.getElementById('result-count');
+  const noResults = document.getElementById('no-results');
+
+  if (!categoryButtons.length || !serviceCategories.length) {
+    return;
+  }
+
+  const updateResults = (activeCategory = 'todos') => {
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    let visibleCount = 0;
+
+    serviceCategories.forEach((section) => {
+      const sectionCategory = section.dataset.category;
+      const matchesCategory = activeCategory === 'todos' || sectionCategory === activeCategory;
+      const textContent = section.textContent.toLowerCase();
+      const matchesSearch = !query || textContent.includes(query);
+      const shouldShow = matchesCategory && matchesSearch;
+
+      section.style.display = shouldShow ? '' : 'none';
+      if (shouldShow) {
+        visibleCount += 1;
+      }
+    });
+
+    if (resultCount) {
+      resultCount.textContent = visibleCount === 0
+        ? 'Nenhuma categoria encontrada'
+        : `${visibleCount} categoria${visibleCount > 1 ? 's' : ''} encontrada${visibleCount > 1 ? 's' : ''}`;
+    }
+
+    if (noResults) {
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+  };
+
+  const setActiveCategory = (category, scrollToSection = false) => {
+    const validCategory = Array.from(categoryButtons).some((button) => button.dataset.category === category)
+      ? category
+      : 'todos';
+
+    categoryButtons.forEach((button) => {
+      button.classList.toggle('active', button.dataset.category === validCategory);
+    });
+
+    updateResults(validCategory);
+
+    if (scrollToSection && validCategory !== 'todos') {
+      const targetSection = document.querySelector(`.service-category[data-category="${validCategory}"]`);
+      if (targetSection) {
+        const headerHeight = document.getElementById('header')?.offsetHeight || 0;
+        const targetPosition = targetSection.getBoundingClientRect().top + window.scrollY - headerHeight - 20;
+        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+      }
+    }
+  };
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      setActiveCategory(button.dataset.category, true);
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const activeButton = document.querySelector('.category-btn.active');
+      const activeCategory = activeButton ? activeButton.dataset.category : 'todos';
+      updateResults(activeCategory);
+    });
+  }
+
+  if (clearSearchButton && searchInput) {
+    clearSearchButton.addEventListener('click', () => {
+      searchInput.value = '';
+      const activeButton = document.querySelector('.category-btn.active');
+      const activeCategory = activeButton ? activeButton.dataset.category : 'todos';
+      updateResults(activeCategory);
+      searchInput.focus();
+    });
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialCategory = urlParams.get('categoria') || 'todos';
+  setActiveCategory(initialCategory, initialCategory !== 'todos');
+}
+
+document.addEventListener('DOMContentLoaded', initServiceFilters);
+
 // ================= SMOOTH SCROLL PARA LINKS INTERNOS =================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
