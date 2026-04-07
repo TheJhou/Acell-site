@@ -118,44 +118,65 @@ document.addEventListener('DOMContentLoaded', initScrollAnimations);
 const contatoForm = document.getElementById('contato-form');
 
 if (contatoForm) {
-  contatoForm.addEventListener('submit', (e) => {
+  contatoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    const nome = document.getElementById('nome').value;
-    const email = document.getElementById('email').value;
-    const telefone = document.getElementById('telefone').value;
-    const mensagem = document.getElementById('mensagem').value;
 
-    // Criar mensagem para WhatsApp
-    const whatsappMsg = encodeURIComponent(
-      `Olá! Meu nome é ${nome}.\n` +
-      `E-mail: ${email}\n` +
-      `Telefone: ${telefone}\n\n` +
-      `Mensagem: ${mensagem}`
-    );
+    const submitBtn = contatoForm.querySelector('button[type="submit"]');
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    const mensagem = document.getElementById('mensagem').value.trim();
 
-    // Mostrar mensagem de sucesso
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
     let successMsg = contatoForm.querySelector('.form-success');
     if (!successMsg) {
       successMsg = document.createElement('div');
       successMsg.className = 'form-success';
-      successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Mensagem preparada! Você será redirecionado para o WhatsApp.';
       contatoForm.appendChild(successMsg);
     }
-    successMsg.classList.add('show');
 
-    // Redirecionar para WhatsApp após um breve delay
-    setTimeout(() => {
-      window.open(`https://wa.me/5500000000000?text=${whatsappMsg}`, '_blank');
-    }, 1500);
+    try {
+      const res = await fetch('/api/contato', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, telefone, mensagem })
+      });
 
-    // Limpar formulário
-    contatoForm.reset();
+      if (res.ok) {
+        successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Mensagem enviada! Entraremos em contato em breve.';
+        successMsg.classList.add('show');
+        contatoForm.reset();
 
-    // Esconder mensagem após 5 segundos
+        // Também abrir WhatsApp como canal adicional
+        const whatsappMsg = encodeURIComponent(
+          `Olá! Meu nome é ${nome}.\nE-mail: ${email}\nTelefone: ${telefone}\n\nMensagem: ${mensagem}`
+        );
+        setTimeout(() => {
+          window.open(`https://wa.me/5511983846167?text=${whatsappMsg}`, '_blank');
+        }, 1500);
+      } else {
+        const data = await res.json();
+        successMsg.innerHTML = `<i class="fas fa-times-circle"></i> ${data.erro || 'Erro ao enviar. Tente novamente.'}`;
+        successMsg.style.background = '#fff5f5';
+        successMsg.style.color = '#c53030';
+        successMsg.classList.add('show');
+      }
+    } catch (err) {
+      successMsg.innerHTML = '<i class="fas fa-times-circle"></i> Falha na conexão. Tente novamente.';
+      successMsg.style.background = '#fff5f5';
+      successMsg.style.color = '#c53030';
+      successMsg.classList.add('show');
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Mensagem';
+
     setTimeout(() => {
       successMsg.classList.remove('show');
-    }, 5000);
+      successMsg.style = '';
+    }, 6000);
   });
 }
 
