@@ -15,14 +15,30 @@ if (menuToggle && navMenu) {
     }
   });
 
+  const closeMenu = () => {
+    if (!navMenu.classList.contains('open')) return;
+    navMenu.classList.remove('open');
+    const icon = menuToggle.querySelector('i');
+    icon.classList.remove('fa-times');
+    icon.classList.add('fa-bars');
+  };
+
   // Fechar menu ao clicar em um link
   document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      navMenu.classList.remove('open');
-      const icon = menuToggle.querySelector('i');
-      icon.classList.remove('fa-times');
-      icon.classList.add('fa-bars');
-    });
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Fechar menu ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (!navMenu.classList.contains('open')) return;
+    if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  // Fechar menu com tecla Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
   });
 }
 
@@ -118,6 +134,40 @@ document.addEventListener('DOMContentLoaded', initScrollAnimations);
 const contatoForm = document.getElementById('contato-form');
 
 if (contatoForm) {
+  const WHATSAPP_NUMBER = '5511983846167';
+  const FETCH_TIMEOUT_MS = 20000;
+
+  const ensureMessageBox = () => {
+    let box = contatoForm.querySelector('.form-success');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'form-success';
+      contatoForm.appendChild(box);
+    }
+    box.classList.remove('is-error');
+    return box;
+  };
+
+  const showError = (box, text) => {
+    box.innerHTML = `<i class="fas fa-times-circle"></i> ${text}`;
+    box.classList.add('show', 'is-error');
+  };
+
+  const showSuccess = (box, nome, email, telefone, mensagem) => {
+    const wppText = encodeURIComponent(
+      `Olá! Meu nome é ${nome}.\nE-mail: ${email}\nTelefone: ${telefone}\n\nMensagem: ${mensagem}`
+    );
+    const wppLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${wppText}`;
+    box.innerHTML = `
+      <i class="fas fa-check-circle"></i>
+      <strong>Mensagem enviada!</strong> Entraremos em contato em breve.
+      <a href="${wppLink}" target="_blank" rel="noopener" class="btn-wpp-inline">
+        <i class="fab fa-whatsapp"></i> Falar agora no WhatsApp
+      </a>
+    `;
+    box.classList.add('show');
+  };
+
   contatoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -127,56 +177,52 @@ if (contatoForm) {
     const telefone = document.getElementById('telefone').value.trim();
     const mensagem = document.getElementById('mensagem').value.trim();
 
+    const box = ensureMessageBox();
+
+    // Validações no cliente
+    if (nome.length < 2) return showError(box, 'Por favor, informe seu nome completo.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError(box, 'E-mail inválido.');
+    if (telefone.replace(/\D/g, '').length < 10) return showError(box, 'Telefone inválido. Inclua DDD.');
+    if (mensagem.length < 10) return showError(box, 'A mensagem precisa ter pelo menos 10 caracteres.');
+    if (mensagem.length > 2000) return showError(box, 'Mensagem muito longa (máx. 2000 caracteres).');
+
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
-    let successMsg = contatoForm.querySelector('.form-success');
-    if (!successMsg) {
-      successMsg = document.createElement('div');
-      successMsg.className = 'form-success';
-      contatoForm.appendChild(successMsg);
-    }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
     try {
       const res = await fetch('/api/contato', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, telefone, mensagem })
+        body: JSON.stringify({ nome, email, telefone, mensagem }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (res.ok) {
-        successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Mensagem enviada! Entraremos em contato em breve.';
-        successMsg.classList.add('show');
+        showSuccess(box, nome, email, telefone, mensagem);
         contatoForm.reset();
-
-        // Também abrir WhatsApp como canal adicional
-        const whatsappMsg = encodeURIComponent(
-          `Olá! Meu nome é ${nome}.\nE-mail: ${email}\nTelefone: ${telefone}\n\nMensagem: ${mensagem}`
-        );
-        setTimeout(() => {
-          window.open(`https://wa.me/5511983846167?text=${whatsappMsg}`, '_blank');
-        }, 1500);
       } else {
-        const data = await res.json();
-        successMsg.innerHTML = `<i class="fas fa-times-circle"></i> ${data.erro || 'Erro ao enviar. Tente novamente.'}`;
-        successMsg.style.background = '#fff5f5';
-        successMsg.style.color = '#c53030';
-        successMsg.classList.add('show');
+        let erro = 'Erro ao enviar. Tente novamente.';
+        try {
+          const data = await res.json();
+          if (data && data.erro) erro = data.erro;
+        } catch (_) {}
+        showError(box, erro);
       }
     } catch (err) {
-      successMsg.innerHTML = '<i class="fas fa-times-circle"></i> Falha na conexão. Tente novamente.';
-      successMsg.style.background = '#fff5f5';
-      successMsg.style.color = '#c53030';
-      successMsg.classList.add('show');
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        showError(box, 'O servidor demorou para responder. Tente novamente em instantes.');
+      } else {
+        showError(box, 'Falha na conexão. Verifique sua internet e tente novamente.');
+      }
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Mensagem';
     }
-
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Mensagem';
-
-    setTimeout(() => {
-      successMsg.classList.remove('show');
-      successMsg.style = '';
-    }, 6000);
   });
 }
 

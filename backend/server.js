@@ -6,8 +6,9 @@ const { pool, init } = require('./database');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '16kb' }));
+app.use(express.urlencoded({ extended: true, limit: '16kb' }));
+app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,12 +18,46 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/api/contato', async (req, res) => {
-  const { nome, email, telefone, mensagem } = req.body;
+// Rate limit simples em memória: máx 5 envios / 10min por IP
+const submitHits = new Map();
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 5;
+
+function rateLimit(req, res, next) {
+  const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  const now = Date.now();
+  const hits = (submitHits.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (hits.length >= RATE_MAX) {
+    return res.status(429).json({ erro: 'Muitas tentativas. Aguarde alguns minutos.' });
+  }
+  hits.push(now);
+  submitHits.set(ip, hits);
+  next();
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+app.post('/api/contato', rateLimit, async (req, res) => {
+  let { nome, email, telefone, mensagem, website } = req.body || {};
+
+  // Honeypot: bots costumam preencher campos ocultos
+  if (website) return res.status(200).json({ sucesso: true });
 
   if (!nome || !email || !telefone || !mensagem) {
     return res.status(400).json({ erro: 'Todos os campos são obrigatórios.' });
   }
+
+  nome = String(nome).trim().slice(0, 120);
+  email = String(email).trim().toLowerCase().slice(0, 160);
+  telefone = String(telefone).trim().slice(0, 30);
+  mensagem = String(mensagem).trim().slice(0, 2000);
+
+  if (nome.length < 2) return res.status(400).json({ erro: 'Nome muito curto.' });
+  if (!EMAIL_REGEX.test(email)) return res.status(400).json({ erro: 'E-mail inválido.' });
+  if (telefone.replace(/\D/g, '').length < 10) {
+    return res.status(400).json({ erro: 'Telefone inválido. Inclua DDD.' });
+  }
+  if (mensagem.length < 10) return res.status(400).json({ erro: 'Mensagem muito curta.' });
 
   try {
     const { rows } = await pool.query(
