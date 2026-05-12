@@ -2,12 +2,12 @@
 
 ## Project Overview
 A website for ACELL ASSESSORIA, a Brazilian accounting and business consultancy firm.
-Includes a Node.js/Express backend with SQLite database for lead (customer data) collection.
+Includes a Node.js/Express backend with PostgreSQL database for lead (customer data) collection.
 
 ## Tech Stack
 - **Frontend:** HTML5, CSS3, Vanilla JavaScript
 - **Backend:** Node.js + Express 5
-- **Database:** SQLite via `better-sqlite3`
+- **Database:** PostgreSQL via `pg` (connection string em `DATABASE_URL`)
 - **External CDN:** Font Awesome, Google Fonts
 
 ## Project Structure
@@ -20,8 +20,9 @@ Includes a Node.js/Express backend with SQLite database for lead (customer data)
 ├── script.js           Frontend logic (form, animations, filters)
 ├── backend/
 │   ├── server.js       Express server (serves static + API on port 5000)
-│   ├── database.js     SQLite setup (creates leads table)
-│   └── leads.db        SQLite database file (auto-created)
+│   └── database.js     PostgreSQL pool + table init (lê DATABASE_URL)
+├── .env                Variáveis de ambiente (NÃO versionar)
+├── .env.example        Exemplo de configuração
 └── package.json        Node dependencies
 ```
 
