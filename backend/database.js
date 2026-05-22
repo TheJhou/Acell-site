@@ -21,8 +21,14 @@ async function init() {
       email TEXT NOT NULL,
       telefone TEXT NOT NULL,
       mensagem TEXT NOT NULL,
+      servicos JSONB NOT NULL DEFAULT '[]'::jsonb,
       criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
+  `);
+
+  await pool.query(`
+    ALTER TABLE contatos
+    ADD COLUMN IF NOT EXISTS servicos JSONB NOT NULL DEFAULT '[]'::jsonb
   `);
 }
 

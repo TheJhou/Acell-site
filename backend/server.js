@@ -52,7 +52,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 app.post('/api/contato', rateLimit, async (req, res) => {
   if (!ensureDatabaseReady(res)) return;
-  let { nome, email, telefone, mensagem, website } = req.body || {};
+  let { nome, email, telefone, mensagem, website, servicos } = req.body || {};
 
   // Honeypot: bots costumam preencher campos ocultos
   if (website) return res.status(200).json({ sucesso: true });
@@ -65,6 +65,11 @@ app.post('/api/contato', rateLimit, async (req, res) => {
   email = String(email).trim().toLowerCase().slice(0, 160);
   telefone = String(telefone).trim().slice(0, 30);
   mensagem = String(mensagem).trim().slice(0, 2000);
+  servicos = Array.isArray(servicos)
+    ? servicos
+      .map((servico) => String(servico).trim().slice(0, 120))
+      .filter((servico, index, array) => servico && array.indexOf(servico) === index)
+    : [];
 
   if (nome.length < 2) return res.status(400).json({ erro: 'Nome muito curto.' });
   if (!EMAIL_REGEX.test(email)) return res.status(400).json({ erro: 'E-mail inválido.' });
@@ -72,11 +77,12 @@ app.post('/api/contato', rateLimit, async (req, res) => {
     return res.status(400).json({ erro: 'Telefone inválido. Inclua DDD.' });
   }
   if (mensagem.length < 10) return res.status(400).json({ erro: 'Mensagem muito curta.' });
+  if (servicos.length > 15) return res.status(400).json({ erro: 'Selecione no máximo 15 serviços.' });
 
   try {
     const { rows } = await pool.query(
-      'INSERT INTO contatos (nome, email, telefone, mensagem) VALUES ($1, $2, $3, $4) RETURNING id',
-      [nome, email, telefone, mensagem]
+      'INSERT INTO contatos (nome, email, telefone, mensagem, servicos) VALUES ($1, $2, $3, $4, $5::jsonb) RETURNING id',
+      [nome, email, telefone, mensagem, JSON.stringify(servicos)]
     );
     res.status(201).json({ sucesso: true, id: rows[0].id });
   } catch (err) {

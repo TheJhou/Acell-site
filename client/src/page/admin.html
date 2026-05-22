@@ -247,6 +247,28 @@
       color: #4a5568;
     }
 
+    td.servicos {
+      min-width: 220px;
+    }
+
+    .service-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .service-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #ebf4ff;
+      color: #2c5282;
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
     td.data { white-space: nowrap; color: #718096; font-size: 0.82rem; }
 
     .btn-del {
@@ -338,13 +360,14 @@
             <th>#</th>
             <th>Nome</th>
             <th>Contato</th>
+            <th>Serviços</th>
             <th>Mensagem</th>
             <th>Recebido em</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="leads-tbody">
-          <tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>
+          <tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>
         </tbody>
       </table>
     </div>
@@ -402,7 +425,7 @@
     document.getElementById('leads-hoje').textContent = leadsHoje;
 
     if (!leads.length) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">
         <i class="fas fa-inbox"></i>Nenhum lead recebido ainda.
       </td></tr>`;
       return;
@@ -416,6 +439,7 @@
           <div>${esc(l.email)}</div>
           <div style="color:#718096;font-size:0.82rem;">${esc(l.telefone)}</div>
         </td>
+        <td class="servicos">${renderServices(l.servicos)}</td>
         <td class="mensagem">${esc(l.mensagem)}</td>
         <td class="data">${formatDate(l.criado_em)}</td>
         <td>
@@ -447,6 +471,16 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function renderServices(services) {
+    if (!Array.isArray(services) || !services.length) {
+      return '<span style="color:#a0aec0;">Não informado</span>';
+    }
+
+    return `<div class="service-badges">${services
+      .map((service) => `<span class="service-badge">${esc(service)}</span>`)
+      .join('')}</div>`;
   }
 
   function formatDate(str) {

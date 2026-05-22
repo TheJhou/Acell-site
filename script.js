@@ -70,6 +70,189 @@ if (btnTopo) {
   });
 }
 
+const SELECTED_SERVICES_KEY = 'acell:selected-services';
+
+function getSelectedServices() {
+  try {
+    const data = JSON.parse(localStorage.getItem(SELECTED_SERVICES_KEY) || '[]');
+    return Array.isArray(data) ? data.filter(item => item && item.nome) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSelectedServices(services) {
+  localStorage.setItem(SELECTED_SERVICES_KEY, JSON.stringify(services));
+}
+
+function clearSelectedServices() {
+  localStorage.removeItem(SELECTED_SERVICES_KEY);
+}
+
+function slugifyServiceName(value) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function buildServiceObject(card) {
+  const name = card.querySelector('span')?.textContent?.trim() || '';
+  const category = card.closest('.service-category')?.dataset.category || '';
+  return {
+    id: `${category}-${slugifyServiceName(name)}`,
+    nome: name,
+    categoria: category,
+  };
+}
+
+function serviceExists(services, serviceId) {
+  return services.some(service => service.id === serviceId);
+}
+
+function renderSelectedServicesInForm() {
+  const box = document.getElementById('selected-services-box');
+  const list = document.getElementById('selected-services-list');
+  const clearBtn = document.getElementById('selected-services-clear');
+
+  if (!box || !list) return;
+
+  const services = getSelectedServices();
+  box.style.display = services.length ? 'block' : 'none';
+  list.innerHTML = services.map(service => `
+    <span class="selected-service-chip">
+      ${service.nome}
+      <button type="button" class="selected-service-remove" data-remove-service="${service.id}" aria-label="Remover ${service.nome}">
+        <i class="fas fa-times"></i>
+      </button>
+    </span>
+  `).join('');
+
+  if (clearBtn) {
+    clearBtn.style.display = services.length ? 'inline-flex' : 'none';
+  }
+}
+
+function syncServiceCards() {
+  const selectedServices = getSelectedServices();
+  document.querySelectorAll('.service-card[data-service-selectable="true"]').forEach(card => {
+    const service = buildServiceObject(card);
+    const isSelected = serviceExists(selectedServices, service.id);
+    card.classList.toggle('selected', isSelected);
+    card.setAttribute('aria-pressed', String(isSelected));
+    const action = card.querySelector('.service-card-action');
+    if (action) {
+      action.textContent = isSelected ? 'Remover' : 'Adicionar';
+    }
+  });
+}
+
+function renderServicesCart() {
+  const cart = document.getElementById('services-cart');
+  const count = document.getElementById('services-cart-count');
+  const list = document.getElementById('services-cart-list');
+  const clearBtn = document.getElementById('services-cart-clear');
+
+  if (!cart || !count || !list) return;
+
+  const services = getSelectedServices();
+  cart.style.display = services.length ? 'block' : 'none';
+  count.textContent = String(services.length);
+  list.innerHTML = services.map(service => `
+    <span class="services-cart-chip">
+      ${service.nome}
+      <button type="button" class="services-cart-remove" data-remove-service="${service.id}" aria-label="Remover ${service.nome}">
+        <i class="fas fa-times"></i>
+      </button>
+    </span>
+  `).join('');
+
+  if (clearBtn) {
+    clearBtn.style.display = services.length ? 'inline-flex' : 'inline-flex';
+  }
+}
+
+function removeSelectedService(serviceId) {
+  const next = getSelectedServices().filter(service => service.id !== serviceId);
+  saveSelectedServices(next);
+  renderSelectedServicesInForm();
+  renderServicesCart();
+  syncServiceCards();
+}
+
+function initSelectedServicesExperience() {
+  const serviceCards = document.querySelectorAll('.service-card:not(.service-card-subtitle)');
+
+  serviceCards.forEach(card => {
+    const name = card.querySelector('span')?.textContent?.trim();
+    if (!name) return;
+
+    card.dataset.serviceSelectable = 'true';
+    card.dataset.serviceName = name;
+    card.setAttribute('role', 'button');
+    card.setAttribute('href', '#');
+    if (!card.querySelector('.service-card-action')) {
+      const action = document.createElement('span');
+      action.className = 'service-card-action';
+      action.textContent = 'Adicionar';
+      card.appendChild(action);
+    }
+
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const services = getSelectedServices();
+      const service = buildServiceObject(card);
+      const next = serviceExists(services, service.id)
+        ? services.filter(item => item.id !== service.id)
+        : [...services, service].slice(0, 15);
+
+      saveSelectedServices(next);
+      renderServicesCart();
+      renderSelectedServicesInForm();
+      syncServiceCards();
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('[data-remove-service]');
+    if (!removeBtn) return;
+    e.preventDefault();
+    removeSelectedService(removeBtn.dataset.removeService);
+  });
+
+  const cartClear = document.getElementById('services-cart-clear');
+  if (cartClear) {
+    cartClear.addEventListener('click', () => {
+      clearSelectedServices();
+      renderServicesCart();
+      renderSelectedServicesInForm();
+      syncServiceCards();
+    });
+  }
+
+  const formClear = document.getElementById('selected-services-clear');
+  if (formClear) {
+    formClear.addEventListener('click', () => {
+      clearSelectedServices();
+      renderSelectedServicesInForm();
+      renderServicesCart();
+      syncServiceCards();
+    });
+  }
+
+  document.querySelectorAll('.services-checkout-link, #services-cart-action').forEach(link => {
+    link.addEventListener('click', () => {
+      saveSelectedServices(getSelectedServices());
+    });
+  });
+
+  renderServicesCart();
+  renderSelectedServicesInForm();
+  syncServiceCards();
+}
+
 // ================= ANIMAÇÃO DE NÚMEROS =================
 function animateNumbers() {
   const numeros = document.querySelectorAll('.numero');
@@ -189,6 +372,7 @@ if (contatoForm) {
     const email = document.getElementById('email').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
     const mensagem = document.getElementById('mensagem').value.trim();
+    const servicos = getSelectedServices().map(service => service.nome);
 
     const box = ensureMessageBox();
 
@@ -209,7 +393,7 @@ if (contatoForm) {
       const res = await fetch('/api/contato', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, telefone, mensagem }),
+        body: JSON.stringify({ nome, email, telefone, mensagem, servicos }),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -217,6 +401,10 @@ if (contatoForm) {
       if (res.ok) {
         showSuccess(box, nome, email, telefone, mensagem);
         contatoForm.reset();
+        clearSelectedServices();
+        renderSelectedServicesInForm();
+        renderServicesCart();
+        syncServiceCards();
       } else {
         let erro = 'Erro ao enviar. Tente novamente.';
         try {
@@ -352,6 +540,7 @@ function initServiceFilters() {
 }
 
 document.addEventListener('DOMContentLoaded', initServiceFilters);
+document.addEventListener('DOMContentLoaded', initSelectedServicesExperience);
 
 // ================= SMOOTH SCROLL PARA LINKS INTERNOS =================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

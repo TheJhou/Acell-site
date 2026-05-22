@@ -71,6 +71,19 @@
 <section class="servicos-lista-completa">
   <div class="container">
 
+    <div class="services-cart" id="services-cart" style="display:none;">
+      <div class="services-cart-header">
+        <div>
+          <span class="services-cart-count" id="services-cart-count">0</span>
+          <strong>Serviços selecionados</strong>
+          <p>Monte sua solicitação e envie para nossa equipe.</p>
+        </div>
+        <button type="button" class="services-cart-clear" id="services-cart-clear">Limpar</button>
+      </div>
+      <div class="services-cart-list" id="services-cart-list"></div>
+      <a href="index.html#contato" class="btn btn-primary services-cart-action" id="services-cart-action">Solicitar proposta</a>
+    </div>
+
     <div id="no-results" class="no-results" style="display:none;">
       <i class="fas fa-search"></i>
       <h3>Nenhum serviço encontrado</h3>
@@ -404,7 +417,7 @@
   <div class="container">
     <h2>Precisa de ajuda com a contabilidade da sua empresa?</h2>
     <p>Entre em contato agora e solicite uma proposta personalizada.</p>
-    <a href="index.html#contato" class="btn btn-primary btn-lg">Solicitar Proposta</a>
+    <a href="index.html#contato" class="btn btn-primary btn-lg services-checkout-link">Solicitar Proposta</a>
   </div>
 </section>
 
