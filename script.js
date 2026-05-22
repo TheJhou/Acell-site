@@ -66,7 +66,12 @@ window.addEventListener('scroll', () => {
 
 if (btnTopo) {
   btnTopo.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const contatoSection = document.getElementById('contato');
+    if (contatoSection) {
+      contatoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   });
 }
 
@@ -368,7 +373,6 @@ if (contatoForm) {
   contatoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const submitBtn = contatoForm.querySelector('button[type="submit"]');
     const nome = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
@@ -379,14 +383,23 @@ if (contatoForm) {
     const box = ensureMessageBox();
 
     // Validações no cliente
-    if (nome.length < 2) return showError(box, 'Por favor, informe seu nome completo.');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError(box, 'E-mail inválido.');
-    if (telefone.replace(/\D/g, '').length < 10) return showError(box, 'Telefone inválido. Inclua DDD.');
-    if (!hasServices && mensagem.length < 10) return showError(box, 'A mensagem precisa ter pelo menos 10 caracteres.');
+    if (!nome || nome.length < 2) return showError(box, 'Por favor, informe seu nome completo.');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError(box, 'E-mail inválido.');
+    if (!telefone || telefone.replace(/\D/g, '').length < 10) return showError(box, 'Telefone inválido. Inclua DDD.');
+    if (!hasServices && (!mensagem || mensagem.length < 10)) return showError(box, 'A mensagem precisa ter pelo menos 10 caracteres.');
     if (mensagem.length > 2000) return showError(box, 'Mensagem muito longa (máx. 2000 caracteres).');
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    const proposalBtn = document.getElementById('btn-proposal');
+    const meetingBtn = document.getElementById('btn-meeting');
+    
+    if (proposalBtn) {
+      proposalBtn.disabled = true;
+      proposalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    }
+    if (meetingBtn) {
+      meetingBtn.disabled = true;
+      meetingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -423,8 +436,14 @@ if (contatoForm) {
         showError(box, 'Falha na conexão. Verifique sua internet e tente novamente.');
       }
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Mensagem';
+      if (proposalBtn) {
+        proposalBtn.disabled = false;
+        proposalBtn.innerHTML = '<i class="fas fa-file-alt"></i> Enviar proposta';
+      }
+      if (meetingBtn) {
+        meetingBtn.disabled = false;
+        meetingBtn.innerHTML = '<i class="fas fa-calendar-alt"></i> Agendar reunião';
+      }
     }
   });
 
