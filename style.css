@@ -956,6 +956,13 @@ footer {
 
 .botao-whatsapp i { font-size: 1.4rem; }
 
+.botao-whatsapp.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
 @keyframes pulse-whatsapp {
   0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); }
   50% { box-shadow: 0 4px 30px rgba(37, 211, 102, 0.6); }

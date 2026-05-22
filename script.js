@@ -145,6 +145,9 @@ if (contatoForm) {
       contatoForm.appendChild(box);
     }
     box.classList.remove('is-error');
+    // Reexibe o WhatsApp flutuante caso esteja oculto de um envio anterior
+    const fab = document.querySelector('.botao-whatsapp');
+    if (fab) fab.classList.remove('is-hidden');
     return box;
   };
 
@@ -152,6 +155,8 @@ if (contatoForm) {
     box.innerHTML = `<i class="fas fa-times-circle"></i> ${text}`;
     box.classList.add('show', 'is-error');
   };
+
+  const floatingWpp = document.querySelector('.botao-whatsapp');
 
   const showSuccess = (box, nome, email, telefone, mensagem) => {
     const wppText = encodeURIComponent(
@@ -166,6 +171,14 @@ if (contatoForm) {
       </a>
     `;
     box.classList.add('show');
+
+    // Esconde o WhatsApp flutuante para não sobrepor a mensagem
+    if (floatingWpp) floatingWpp.classList.add('is-hidden');
+
+    // Rola até a mensagem para garantir visibilidade
+    requestAnimationFrame(() => {
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
   };
 
   contatoForm.addEventListener('submit', async (e) => {
