@@ -66,15 +66,20 @@ window.addEventListener('scroll', () => {
 
 if (btnTopo) {
   btnTopo.addEventListener('click', () => {
-    const contatoForm = document.getElementById('contato-form');
-    if (contatoForm) {
-      contatoForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const selectedServicesBox = document.getElementById('selected-services-box');
+    if (selectedServicesBox && selectedServicesBox.style.display !== 'none') {
+      selectedServicesBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
-      const contatoSection = document.getElementById('contato');
-      if (contatoSection) {
-        contatoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const contatoForm = document.getElementById('contato-form');
+      if (contatoForm) {
+        contatoForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const contatoSection = document.getElementById('contato');
+        if (contatoSection) {
+          contatoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     }
   });
