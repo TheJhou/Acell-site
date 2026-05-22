@@ -222,13 +222,6 @@ function initSelectedServicesExperience() {
       renderServicesCart();
       renderSelectedServicesInForm();
       syncServiceCards();
-
-      if (!serviceExists(services, service.id)) {
-        const cart = document.getElementById('services-cart');
-        if (cart) {
-          cart.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }
     });
   });
 
@@ -365,26 +358,11 @@ if (contatoForm) {
   const floatingWpp = document.querySelector('.botao-whatsapp');
 
   const showSuccess = (box, nome, email, telefone, mensagem) => {
-    const wppText = encodeURIComponent(
-      `Olá! Meu nome é ${nome}.\nE-mail: ${email}\nTelefone: ${telefone}\n\nMensagem: ${mensagem}`
-    );
-    const wppLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${wppText}`;
-    box.innerHTML = `
-      <i class="fas fa-check-circle"></i>
-      <strong>Mensagem enviada!</strong> Entraremos em contato em breve.
-      <a href="${wppLink}" target="_blank" rel="noopener" class="btn-wpp-inline">
-        <i class="fab fa-whatsapp"></i> Falar agora no WhatsApp
-      </a>
-    `;
-    box.classList.add('show');
-
-    // Esconde o WhatsApp flutuante para não sobrepor a mensagem
-    if (floatingWpp) floatingWpp.classList.add('is-hidden');
-
-    // Rola até a mensagem para garantir visibilidade
-    requestAnimationFrame(() => {
-      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+    const modal = document.getElementById('success-modal');
+    if (modal) {
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
   };
 
   contatoForm.addEventListener('submit', async (e) => {
@@ -396,6 +374,7 @@ if (contatoForm) {
     const telefone = document.getElementById('telefone').value.trim();
     const mensagem = document.getElementById('mensagem').value.trim();
     const servicos = getSelectedServices().map(service => service.nome);
+    const hasServices = servicos.length > 0;
 
     const box = ensureMessageBox();
 
@@ -403,7 +382,7 @@ if (contatoForm) {
     if (nome.length < 2) return showError(box, 'Por favor, informe seu nome completo.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError(box, 'E-mail inválido.');
     if (telefone.replace(/\D/g, '').length < 10) return showError(box, 'Telefone inválido. Inclua DDD.');
-    if (mensagem.length < 10) return showError(box, 'A mensagem precisa ter pelo menos 10 caracteres.');
+    if (!hasServices && mensagem.length < 10) return showError(box, 'A mensagem precisa ter pelo menos 10 caracteres.');
     if (mensagem.length > 2000) return showError(box, 'Mensagem muito longa (máx. 2000 caracteres).');
 
     submitBtn.disabled = true;
@@ -448,6 +427,64 @@ if (contatoForm) {
       submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Mensagem';
     }
   });
+
+  // Handle split button clicks
+  const proposalBtn = document.getElementById('btn-proposal');
+  const meetingBtn = document.getElementById('btn-meeting');
+
+  if (proposalBtn) {
+    proposalBtn.addEventListener('click', () => {
+      const mensagemField = document.getElementById('mensagem');
+      const servicos = getSelectedServices();
+      
+      if (servicos.length > 0) {
+        mensagemField.value = mensagemField.value.trim() || 'Gostaria de receber uma proposta para os serviços selecionados.';
+      }
+      
+      contatoForm.dispatchEvent(new Event('submit'));
+    });
+  }
+
+  if (meetingBtn) {
+    meetingBtn.addEventListener('click', () => {
+      const mensagemField = document.getElementById('mensagem');
+      const servicos = getSelectedServices();
+      
+      if (servicos.length > 0) {
+        mensagemField.value = mensagemField.value.trim() || 'Gostaria de agendar uma reunião para discutir os serviços selecionados.';
+      } else {
+        mensagemField.value = mensagemField.value.trim() || 'Gostaria de agendar uma reunião.';
+      }
+      
+      contatoForm.dispatchEvent(new Event('submit'));
+    });
+  }
+
+  // Modal close handlers
+  const modal = document.getElementById('success-modal');
+  const modalBackdrop = document.getElementById('success-modal-backdrop');
+  const modalCloseBtn = document.getElementById('success-modal-close');
+
+  const closeModal = () => {
+    if (modal) {
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+  };
+
+  if (modalBackdrop) {
+    modalBackdrop.addEventListener('click', closeModal);
+  }
+
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', closeModal);
+  }
+
+  if (modal) {
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  }
 }
 
 // ================= MÁSCARA DE TELEFONE =================
