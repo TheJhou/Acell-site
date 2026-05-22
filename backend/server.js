@@ -5,6 +5,7 @@ const { pool, init } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+let dbReady = false;
 
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
@@ -37,7 +38,20 @@ function rateLimit(req, res, next) {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+ const projectRoot = path.join(__dirname, '..');
+ const pagesRoot = path.join(projectRoot, 'client', 'src', 'page');
+
+ function ensureDatabaseReady(res) {
+  if (dbReady) return true;
+
+  res.status(503).json({
+    erro: 'Banco de dados temporariamente indisponível. Tente novamente em alguns instantes.',
+  });
+  return false;
+ }
+
 app.post('/api/contato', rateLimit, async (req, res) => {
+  if (!ensureDatabaseReady(res)) return;
   let { nome, email, telefone, mensagem, website } = req.body || {};
 
   // Honeypot: bots costumam preencher campos ocultos
@@ -72,6 +86,7 @@ app.post('/api/contato', rateLimit, async (req, res) => {
 });
 
 app.get('/api/contatos', async (req, res) => {
+  if (!ensureDatabaseReady(res)) return;
   const senha = req.headers['x-admin-key'];
   if (senha !== (process.env.ADMIN_KEY || 'acell2024')) {
     return res.status(401).json({ erro: 'Não autorizado.' });
@@ -86,6 +101,7 @@ app.get('/api/contatos', async (req, res) => {
 });
 
 app.delete('/api/contatos/:id', async (req, res) => {
+  if (!ensureDatabaseReady(res)) return;
   const senha = req.headers['x-admin-key'];
   if (senha !== (process.env.ADMIN_KEY || 'acell2024')) {
     return res.status(401).json({ erro: 'Não autorizado.' });
@@ -99,19 +115,48 @@ app.delete('/api/contatos/:id', async (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(pagesRoot));
+app.use(express.static(projectRoot));
 
-app.get('/{*path}', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'index.html'));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(pagesRoot, 'index.html'));
 });
 
-init()
-  .then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Servidor ACELL Assessoria rodando na porta ${PORT}`);
-    });
-  })
-  .catch((err) => {
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(pagesRoot, 'admin.html'));
+});
+
+app.get('/{*path}', (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+
+  res.sendFile(path.join(pagesRoot, 'index.html'));
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor ACELL Assessoria rodando na porta ${PORT}`);
+});
+
+async function bootstrapDatabase() {
+  try {
+    await init();
+    dbReady = true;
+    console.log('Banco de dados conectado com sucesso.');
+  } catch (err) {
+    dbReady = false;
     console.error('Falha ao inicializar o banco:', err);
-    process.exit(1);
-  });
+  }
+}
+
+bootstrapDatabase();
+
+setInterval(async () => {
+  if (dbReady) return;
+  await bootstrapDatabase();
+}, 15000);
+
+pool.on('error', (err) => {
+  dbReady = false;
+  console.error('Erro inesperado no pool do banco:', err);
+});
