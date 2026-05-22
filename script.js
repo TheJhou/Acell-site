@@ -66,11 +66,16 @@ window.addEventListener('scroll', () => {
 
 if (btnTopo) {
   btnTopo.addEventListener('click', () => {
-    const contatoSection = document.getElementById('contato');
-    if (contatoSection) {
-      contatoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const contatoForm = document.getElementById('contato-form');
+    if (contatoForm) {
+      contatoForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const contatoSection = document.getElementById('contato');
+      if (contatoSection) {
+        contatoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   });
 }
