@@ -142,9 +142,14 @@ function syncServiceCards() {
     const isSelected = serviceExists(selectedServices, service.id);
     card.classList.toggle('selected', isSelected);
     card.setAttribute('aria-pressed', String(isSelected));
+    card.setAttribute('title', isSelected ? 'Serviço selecionado' : 'Clique para selecionar este serviço');
     const action = card.querySelector('.service-card-action');
     if (action) {
       action.textContent = isSelected ? 'Remover' : 'Adicionar';
+    }
+    const status = card.querySelector('.service-card-status');
+    if (status) {
+      status.textContent = isSelected ? 'Selecionado' : 'Disponível';
     }
   });
 }
@@ -192,12 +197,17 @@ function initSelectedServicesExperience() {
     card.dataset.serviceSelectable = 'true';
     card.dataset.serviceName = name;
     card.setAttribute('role', 'button');
-    card.setAttribute('href', '#');
     if (!card.querySelector('.service-card-action')) {
       const action = document.createElement('span');
       action.className = 'service-card-action';
       action.textContent = 'Adicionar';
       card.appendChild(action);
+    }
+    if (!card.querySelector('.service-card-status')) {
+      const status = document.createElement('span');
+      status.className = 'service-card-status';
+      status.textContent = 'Disponível';
+      card.appendChild(status);
     }
 
     card.addEventListener('click', (e) => {
@@ -212,6 +222,13 @@ function initSelectedServicesExperience() {
       renderServicesCart();
       renderSelectedServicesInForm();
       syncServiceCards();
+
+      if (!serviceExists(services, service.id)) {
+        const cart = document.getElementById('services-cart');
+        if (cart) {
+          cart.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
     });
   });
 
@@ -243,6 +260,12 @@ function initSelectedServicesExperience() {
   }
 
   document.querySelectorAll('.services-checkout-link, #services-cart-action').forEach(link => {
+    link.addEventListener('click', () => {
+      saveSelectedServices(getSelectedServices());
+    });
+  });
+
+  document.querySelectorAll('a[href^="index.html#"]').forEach(link => {
     link.addEventListener('click', () => {
       saveSelectedServices(getSelectedServices());
     });
@@ -464,24 +487,52 @@ function initServiceFilters() {
   const updateResults = (activeCategory = 'todos') => {
     const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
     let visibleCount = 0;
+    let visibleServices = 0;
 
     serviceCategories.forEach((section) => {
       const sectionCategory = section.dataset.category;
       const matchesCategory = activeCategory === 'todos' || sectionCategory === activeCategory;
-      const textContent = section.textContent.toLowerCase();
-      const matchesSearch = !query || textContent.includes(query);
-      const shouldShow = matchesCategory && matchesSearch;
+      const cards = Array.from(section.querySelectorAll('.service-card:not(.service-card-subtitle)'));
+      const subtitles = Array.from(section.querySelectorAll('.service-card-subtitle'));
 
-      section.style.display = shouldShow ? '' : 'none';
-      if (shouldShow) {
+      if (!matchesCategory) {
+        section.style.display = 'none';
+        cards.forEach((card) => {
+          card.style.display = 'none';
+        });
+        subtitles.forEach((subtitle) => {
+          subtitle.style.display = 'none';
+        });
+        return;
+      }
+
+      let sectionVisibleServices = 0;
+      cards.forEach((card) => {
+        const serviceName = (card.dataset.serviceName || card.textContent || '').toLowerCase();
+        const shouldShowCard = !query || serviceName.includes(query);
+        card.style.display = shouldShowCard ? '' : 'none';
+        if (shouldShowCard) {
+          sectionVisibleServices += 1;
+        }
+      });
+
+      subtitles.forEach((subtitle) => {
+        subtitle.style.display = sectionVisibleServices > 0 ? '' : 'none';
+      });
+
+      const shouldShowSection = sectionVisibleServices > 0;
+      section.style.display = shouldShowSection ? '' : 'none';
+
+      if (shouldShowSection) {
         visibleCount += 1;
+        visibleServices += sectionVisibleServices;
       }
     });
 
     if (resultCount) {
-      resultCount.textContent = visibleCount === 0
-        ? 'Nenhuma categoria encontrada'
-        : `${visibleCount} categoria${visibleCount > 1 ? 's' : ''} encontrada${visibleCount > 1 ? 's' : ''}`;
+      resultCount.textContent = visibleServices === 0
+        ? 'Nenhum serviço encontrado'
+        : `${visibleServices} serviço${visibleServices > 1 ? 's' : ''} em ${visibleCount} categoria${visibleCount > 1 ? 's' : ''}`;
     }
 
     if (noResults) {
