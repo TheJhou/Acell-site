@@ -5,8 +5,10 @@ const navMenu = document.getElementById('nav-menu');
 if (menuToggle && navMenu) {
   menuToggle.addEventListener('click', () => {
     navMenu.classList.toggle('open');
+    const isOpen = navMenu.classList.contains('open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
     const icon = menuToggle.querySelector('i');
-    if (navMenu.classList.contains('open')) {
+    if (isOpen) {
       icon.classList.remove('fa-bars');
       icon.classList.add('fa-times');
     } else {
@@ -18,6 +20,7 @@ if (menuToggle && navMenu) {
   const closeMenu = () => {
     if (!navMenu.classList.contains('open')) return;
     navMenu.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
     const icon = menuToggle.querySelector('i');
     icon.classList.remove('fa-times');
     icon.classList.add('fa-bars');
@@ -68,8 +71,25 @@ window.addEventListener('scroll', () => {
 
 if (btnTopo) {
   btnTopo.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const cart = document.getElementById('services-cart');
+    if (cart && cart.style.display !== 'none' && getSelectedServices().length > 0) {
+      const headerHeight = document.getElementById('header')?.offsetHeight || 0;
+      const targetY = cart.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   });
+
+  // Atualiza aria-label conforme o contexto
+  const updateBtnTopoLabel = () => {
+    const cart = document.getElementById('services-cart');
+    const hasServices = cart && cart.style.display !== 'none' && getSelectedServices().length > 0;
+    btnTopo.setAttribute('aria-label', hasServices ? 'Ver serviços selecionados' : 'Voltar ao topo');
+  };
+
+  window.addEventListener('scroll', updateBtnTopoLabel);
+  document.addEventListener('click', updateBtnTopoLabel);
 }
 
 const SELECTED_SERVICES_KEY = 'acell:selected-services';
@@ -616,6 +636,7 @@ function initServiceFilters() {
 
     categoryButtons.forEach((button) => {
       button.classList.toggle('active', button.dataset.category === validCategory);
+    button.setAttribute('aria-pressed', String(button.dataset.category === validCategory));
     });
 
     updateResults(validCategory);
