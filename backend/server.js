@@ -93,8 +93,8 @@ app.post('/api/contato', rateLimit, async (req, res) => {
 
 app.get('/api/contatos', async (req, res) => {
   if (!ensureDatabaseReady(res)) return;
-  const senha = req.headers['x-admin-key'];
-  if (senha !== (process.env.ADMIN_KEY || 'acell2024')) {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey || req.headers['x-admin-key'] !== adminKey) {
     return res.status(401).json({ erro: 'Não autorizado.' });
   }
   try {
@@ -108,8 +108,8 @@ app.get('/api/contatos', async (req, res) => {
 
 app.delete('/api/contatos/:id', async (req, res) => {
   if (!ensureDatabaseReady(res)) return;
-  const senha = req.headers['x-admin-key'];
-  if (senha !== (process.env.ADMIN_KEY || 'acell2024')) {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey || req.headers['x-admin-key'] !== adminKey) {
     return res.status(401).json({ erro: 'Não autorizado.' });
   }
   try {

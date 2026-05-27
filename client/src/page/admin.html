@@ -384,21 +384,34 @@
     const key = adminKeyInput.value.trim();
     if (!key) return;
 
-    const res = await fetch('/api/contatos', { headers: { 'x-admin-key': key } });
+    const errorMsg = document.getElementById('error-msg');
+    try {
+      const res = await fetch('/api/contatos', { headers: { 'x-admin-key': key } });
 
-    if (res.status === 401) {
-      document.getElementById('error-msg').style.display = 'block';
-      return;
+      if (res.status === 401) {
+        errorMsg.textContent = 'Chave incorreta. Tente novamente.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      if (!res.ok) {
+        errorMsg.textContent = 'Erro no servidor. Tente novamente em instantes.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      adminKey = key;
+      errorMsg.style.display = 'none';
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('btn-logout').style.display = 'inline-block';
+
+      const data = await res.json();
+      renderLeads(data);
+    } catch (_) {
+      errorMsg.textContent = 'Falha na conexão. Verifique sua internet.';
+      errorMsg.style.display = 'block';
     }
-
-    adminKey = key;
-    document.getElementById('error-msg').style.display = 'none';
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('btn-logout').style.display = 'inline-block';
-
-    const data = await res.json();
-    renderLeads(data);
   }
 
   function logout() {
@@ -420,8 +433,14 @@
     const tbody = document.getElementById('leads-tbody');
     document.getElementById('total-leads').textContent = leads.length;
 
-    const hoje = new Date().toISOString().slice(0, 10);
-    const leadsHoje = leads.filter(l => l.criado_em && l.criado_em.startsWith(hoje)).length;
+    const agora = new Date();
+    const hoje = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
+    const leadsHoje = leads.filter(l => {
+      if (!l.criado_em) return false;
+      const d = new Date(l.criado_em);
+      const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      return ds === hoje;
+    }).length;
     document.getElementById('leads-hoje').textContent = leadsHoje;
 
     if (!leads.length) {

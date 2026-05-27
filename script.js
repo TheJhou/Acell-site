@@ -46,6 +46,7 @@ if (menuToggle && navMenu) {
 const header = document.getElementById('header');
 
 window.addEventListener('scroll', () => {
+  if (!header) return;
   if (window.scrollY > 50) {
     header.classList.add('scrolled');
   } else {
@@ -57,6 +58,7 @@ window.addEventListener('scroll', () => {
 const btnTopo = document.getElementById('btn-topo');
 
 window.addEventListener('scroll', () => {
+  if (!btnTopo) return;
   if (window.scrollY > 500) {
     btnTopo.classList.add('visible');
   } else {
@@ -66,22 +68,7 @@ window.addEventListener('scroll', () => {
 
 if (btnTopo) {
   btnTopo.addEventListener('click', () => {
-    const selectedServicesBox = document.getElementById('selected-services-box');
-    if (selectedServicesBox && selectedServicesBox.style.display !== 'none') {
-      selectedServicesBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
-      const contatoForm = document.getElementById('contato-form');
-      if (contatoForm) {
-        contatoForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        const contatoSection = document.getElementById('contato');
-        if (contatoSection) {
-          contatoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
@@ -102,6 +89,15 @@ function saveSelectedServices(services) {
 
 function clearSelectedServices() {
   localStorage.removeItem(SELECTED_SERVICES_KEY);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function slugifyServiceName(value) {
@@ -138,8 +134,8 @@ function renderSelectedServicesInForm() {
   box.style.display = services.length ? 'block' : 'none';
   list.innerHTML = services.map(service => `
     <span class="selected-service-chip">
-      ${service.nome}
-      <button type="button" class="selected-service-remove" data-remove-service="${service.id}" aria-label="Remover ${service.nome}">
+      ${escapeHtml(service.nome)}
+      <button type="button" class="selected-service-remove" data-remove-service="${escapeHtml(service.id)}" aria-label="Remover ${escapeHtml(service.nome)}">
         <i class="fas fa-times"></i>
       </button>
     </span>
@@ -182,15 +178,15 @@ function renderServicesCart() {
   count.textContent = String(services.length);
   list.innerHTML = services.map(service => `
     <span class="services-cart-chip">
-      ${service.nome}
-      <button type="button" class="services-cart-remove" data-remove-service="${service.id}" aria-label="Remover ${service.nome}">
+      ${escapeHtml(service.nome)}
+      <button type="button" class="services-cart-remove" data-remove-service="${escapeHtml(service.id)}" aria-label="Remover ${escapeHtml(service.nome)}">
         <i class="fas fa-times"></i>
       </button>
     </span>
   `).join('');
 
   if (clearBtn) {
-    clearBtn.style.display = services.length ? 'inline-flex' : 'inline-flex';
+    clearBtn.style.display = services.length ? 'inline-flex' : 'none';
   }
 }
 
@@ -310,9 +306,11 @@ function animateNumbers() {
 // Observer para animar números quando entrar na tela
 const sobreSection = document.querySelector('.sobre');
 if (sobreSection) {
+  let numbersAnimated = false;
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && !numbersAnimated) {
+        numbersAnimated = true;
         animateNumbers();
         observer.unobserve(entry.target);
       }
@@ -358,7 +356,7 @@ if (contatoForm) {
       box.className = 'form-success';
       contatoForm.appendChild(box);
     }
-    box.classList.remove('is-error');
+    box.classList.remove('is-error', 'show');
     // Reexibe o WhatsApp flutuante caso esteja oculto de um envio anterior
     const fab = document.querySelector('.botao-whatsapp');
     if (fab) fab.classList.remove('is-hidden');
@@ -401,13 +399,18 @@ if (contatoForm) {
 
     const proposalBtn = document.getElementById('btn-proposal');
     const meetingBtn = document.getElementById('btn-meeting');
+
+    if (proposalBtn && proposalBtn.dataset.submitting === 'true') return;
+    if (meetingBtn && meetingBtn.dataset.submitting === 'true') return;
     
     if (proposalBtn) {
       proposalBtn.disabled = true;
+      proposalBtn.dataset.submitting = 'true';
       proposalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
     }
     if (meetingBtn) {
       meetingBtn.disabled = true;
+      meetingBtn.dataset.submitting = 'true';
       meetingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
     }
 
@@ -448,10 +451,12 @@ if (contatoForm) {
     } finally {
       if (proposalBtn) {
         proposalBtn.disabled = false;
+        proposalBtn.dataset.submitting = 'false';
         proposalBtn.innerHTML = '<i class="fas fa-file-alt"></i> Enviar proposta';
       }
       if (meetingBtn) {
         meetingBtn.disabled = false;
+        meetingBtn.dataset.submitting = 'false';
         meetingBtn.innerHTML = '<i class="fas fa-calendar-alt"></i> Agendar reunião';
       }
     }
@@ -470,7 +475,7 @@ if (contatoForm) {
         mensagemField.value = mensagemField.value.trim() || 'Gostaria de receber uma proposta para os serviços selecionados.';
       }
       
-      contatoForm.dispatchEvent(new Event('submit'));
+      contatoForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     });
   }
 
@@ -485,7 +490,7 @@ if (contatoForm) {
         mensagemField.value = mensagemField.value.trim() || 'Gostaria de agendar uma reunião.';
       }
       
-      contatoForm.dispatchEvent(new Event('submit'));
+      contatoForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     });
   }
 
@@ -521,16 +526,14 @@ const telefoneInput = document.getElementById('telefone');
 
 if (telefoneInput) {
   telefoneInput.addEventListener('input', (e) => {
-    let value = e.target.value.replace(/\D/g, '');
+    let value = e.target.value.replace(/\D/g, '').slice(0, 11);
     
-    if (value.length <= 11) {
-      if (value.length > 6) {
-        value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
-      } else if (value.length > 2) {
-        value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-      } else if (value.length > 0) {
-        value = `(${value}`;
-      }
+    if (value.length > 6) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+    } else if (value.length > 2) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+    } else if (value.length > 0) {
+      value = `(${value}`;
     }
     
     e.target.value = value;

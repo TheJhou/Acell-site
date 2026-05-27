@@ -26,10 +26,6 @@ async function init() {
     )
   `);
 
-  await pool.query(`
-    ALTER TABLE contatos
-    ADD COLUMN IF NOT EXISTS servicos JSONB NOT NULL DEFAULT '[]'::jsonb
-  `);
 }
 
 module.exports = { pool, init };
