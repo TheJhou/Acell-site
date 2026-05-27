@@ -11,10 +11,42 @@ app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.set('trust proxy', 1);
 
+// ================= SECURITY HEADERS =================
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+      "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+      "img-src 'self' data: https://placehold.co",
+      "connect-src 'self'",
+      "frame-ancestors 'none'",
+    ].join('; ')
+  );
+  if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
+});
+
+// ================= CORS =================
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || null;
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin || (ALLOWED_ORIGIN && origin === ALLOWED_ORIGIN) || !ALLOWED_ORIGIN) {
+    if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-key');
+  res.setHeader('Vary', 'Origin');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -25,7 +57,9 @@ const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_MAX = 5;
 
 function rateLimit(req, res, next) {
-  const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  // req.ip já é sanitizado pelo Express com trust proxy; x-forwarded-for só como fallback
+  const rawIp = req.ip || (req.headers['x-forwarded-for'] || 'unknown').split(',')[0].trim();
+  const ip = rawIp.replace(/[^a-f0-9.:]/gi, '').slice(0, 45) || 'unknown';
   const now = Date.now();
   const hits = (submitHits.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS);
   if (hits.length >= RATE_MAX) {
@@ -35,6 +69,16 @@ function rateLimit(req, res, next) {
   submitHits.set(ip, hits);
   next();
 }
+
+// Limpeza periódica do Map para evitar crescimento ilimitado (memory leak / DoS)
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, hits] of submitHits.entries()) {
+    const valid = hits.filter((t) => now - t < RATE_WINDOW_MS);
+    if (valid.length === 0) submitHits.delete(ip);
+    else submitHits.set(ip, valid);
+  }
+}, RATE_WINDOW_MS);
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -112,8 +156,12 @@ app.delete('/api/contatos/:id', async (req, res) => {
   if (!adminKey || req.headers['x-admin-key'] !== adminKey) {
     return res.status(401).json({ erro: 'Não autorizado.' });
   }
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ erro: 'ID inválido.' });
+  }
   try {
-    await pool.query('DELETE FROM contatos WHERE id = $1', [req.params.id]);
+    await pool.query('DELETE FROM contatos WHERE id = $1', [id]);
     res.json({ sucesso: true });
   } catch (err) {
     console.error('Erro ao excluir contato:', err);

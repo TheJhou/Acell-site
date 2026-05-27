@@ -423,10 +423,14 @@
   }
 
   async function loadLeads() {
-    const res = await fetch('/api/contatos', { headers: { 'x-admin-key': adminKey } });
-    if (!res.ok) return;
-    const data = await res.json();
-    renderLeads(data);
+    try {
+      const res = await fetch('/api/contatos', { headers: { 'x-admin-key': adminKey } });
+      if (!res.ok) return;
+      const data = await res.json();
+      renderLeads(data);
+    } catch (_) {
+      console.error('Erro ao recarregar leads.');
+    }
   }
 
   function renderLeads(leads) {
