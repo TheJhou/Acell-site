@@ -101,8 +101,8 @@ app.post('/api/contato', rateLimit, async (req, res) => {
   // Honeypot: bots costumam preencher campos ocultos
   if (website) return res.status(200).json({ sucesso: true });
 
-  if (!nome || !email || !telefone || !mensagem) {
-    return res.status(400).json({ erro: 'Todos os campos são obrigatórios.' });
+  if (!nome || !email || !telefone) {
+    return res.status(400).json({ erro: 'Nome, e-mail e telefone são obrigatórios.' });
   }
 
   nome = String(nome).trim().slice(0, 120);
@@ -120,7 +120,7 @@ app.post('/api/contato', rateLimit, async (req, res) => {
   if (telefone.replace(/\D/g, '').length < 10) {
     return res.status(400).json({ erro: 'Telefone inválido. Inclua DDD.' });
   }
-  if (mensagem.length < 10) return res.status(400).json({ erro: 'Mensagem muito curta.' });
+  if (mensagem && mensagem.length < 10) return res.status(400).json({ erro: 'Mensagem muito curta.' });
   if (servicos.length > 15) return res.status(400).json({ erro: 'Selecione no máximo 15 serviços.' });
 
   try {
